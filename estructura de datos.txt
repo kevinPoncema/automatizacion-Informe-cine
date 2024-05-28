@@ -43,3 +43,42 @@ Servidor Express escuchando en el puerto 3000
     inventarioReal: 12
   }
 ]
+matRes = 
+[
+  {
+    productName: 'BOLSA MED 2',
+    inventoryInitial: 32,
+    entrada: 22,
+    salida: 28,
+    inventarioReal: 29,
+    TotalProductos: 26,
+    inventarioFinal: 23,
+    totalIndi: 30,
+    balanceInventario: 6,
+    balanceCombos: 4
+  },
+  {
+    productName: 'VASO 22 ONZ',
+    inventoryInitial: 33,
+    entrada: 18,
+    salida: 22,
+    inventarioReal: 20,
+    TotalProductos: 29,
+    inventarioFinal: 23,
+    totalIndi: 240,
+    balanceInventario: -3,
+    balanceCombos: 6
+  },
+  {
+    productName: 'HOT DOG',
+    inventoryInitial: 29,
+    entrada: 5,
+    salida: 2,
+    inventarioReal: 2,
+    TotalProductos: 32,
+    inventarioFinal: 15,
+    totalIndi: 255,
+    balanceInventario: -13,
+    balanceCombos: 2
+  }
+]

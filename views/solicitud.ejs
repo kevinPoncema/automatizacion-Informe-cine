@@ -73,7 +73,13 @@
                 if (response.ok) {
                     const data = await response.json();
                     console.log(data);
-                    alert('Datos enviados correctamente.');
+                    if(data.status === 'Error al obtener los datos'){
+                        alert('Error al enviar los datos.');
+                    }else{
+                        console.log(data.urlPdf)
+                        window.open(data.urlPdf, '_blank'); // Abrir el PDF en una nueva pestaña
+                        alert('Datos enviados correctamente. Se abrirá el PDF.'); // Mensaje opcional
+                    }
                 } else {
                     console.error('Error al enviar los datos.');
                 }

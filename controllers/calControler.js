@@ -1,11 +1,10 @@
 const path = require('path');
-const express = require('express');
-const requestDataModel = require("../models/requestDataModel");
 const ComboModel = require("../models/comboModel");
 const { json } = require('body-parser');
+const fileController = require("../controllers/fileControler");
 
 class Calcular {
-    async hacerCalculos(req, res, informeVentas) {
+    async hacerCalculos(req, res, informeVentas,pdfCompleto) {
         try {
             const formData = req.body; // Obtener los datos enviados en el cuerpo de la solicitud
             if (!informeVentas) {
@@ -40,27 +39,28 @@ class Calcular {
                     }
                      //calcula el total del producto 
                      obj.totalIndi = infoVentas.importe * infoVentas.cantidad;
-                    totalGen+= obj.totalGen;
+                    totalGen+= obj.totalIndi;
                     obj.balanceInventario = data.inventarioReal-obj.inventarioFinal
                     obj.balanceCombos = balanceCombos
                 }
                 resMat.push(obj);
             }
-            
+            //guarda los resultados en la db
             const modeloCombos = new ComboModel();
-            const jsonData = JSON.stringify([resMat]); // Asumiendo que resMat es un objeto o array que quieres convertir a JSON
+            const jsonData = JSON.stringify([resMat]); 
             const idEmpleado = 1;
-            console.log(jsonData)
             modeloCombos.sendInfoVentaJson([jsonData, idEmpleado])
+
             console.log(resMat)
+            //genera el pdf
+            await fileController.genPdf(resMat,pdfCompleto,totalGen)
             // Responder al cliente con un mensaje de confirmación
-            return res.json({ status: 'Datos recibidos correctamente.', resMat });
+            return res.json({ status: 'Datos recibidos correctamente.', resMat,urlPdf:"http://localhost:3000/getPdf" });
         } catch (error) {
             console.error('Error al obtener los datos:', error);
-            return  res.status(500).send({ status: 'Error al obtener los datos' });
+            return  res.status(500).send({ status: 'Error al obtener los datos'});
         }
     }
 }
 
 module.exports = Calcular;
-

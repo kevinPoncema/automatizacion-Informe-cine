@@ -38,9 +38,21 @@ app.get("/llenarDatos",(req,res)=>{
     const dataControl = new LoadRequestData(); // Corrección: se añade el new para crear una instancia de LoadRequestData
     dataControl.getIntData(req,res);
 });
-
+let pdfCompleto = {}
 const calControl = new CalculatorController(); // Corrección: se añade el new para crear una instancia de CalculatorController
-app.post("/datosXCalculo", (req, res) => { calControl.hacerCalculos(req,res,informeVentas); });
+app.post("/datosXCalculo", (req, res) => { calControl.hacerCalculos(req,res,informeVentas,pdfCompleto); });
+
+app.get("/getPdf",(req,res)=>{
+    const filePath = path.join(__dirname, './pdf', 'hola.pdf');
+    res.sendFile(pdfCompleto.filePath, (err) => {
+        if (err) {
+            console.error('Error al enviar el archivo PDF:', err);
+            res.status(err.status).end();
+        } else {
+            console.log('Archivo PDF enviado correctamente');
+        }
+    });
+})
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 3000;
