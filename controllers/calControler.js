@@ -38,22 +38,28 @@ class Calcular {
                         }
                     }
                      //calcula el total del producto 
-                     obj.totalIndi = infoVentas.importe * infoVentas.cantidad;
+                    obj.totalIndi = infoVentas.importe * infoVentas.cantidad;
                     totalGen+= obj.totalIndi;
-                    obj.balanceInventario = data.inventarioReal-obj.inventarioFinal
                     obj.balanceCombos = balanceCombos
+                    obj.balanceInventario = data.inventarioReal-(obj.inventarioFinal+obj.balanceCombos)
+                    resMat.push(obj);
                 }
-                resMat.push(obj);
-            }
+            }//fin for productos
+            //agrega los datos de los combos a la matris
+            combos.forEach((combo) => {
+                combo.totalIndi = combo.importe * combo.cantidad;
+                totalGen += Number(combo.totalIndi);
+            });
+
+
             //guarda los resultados en la db
             const modeloCombos = new ComboModel();
             const jsonData = JSON.stringify([resMat]); 
             const idEmpleado = 1;
             modeloCombos.sendInfoVentaJson([jsonData, idEmpleado])
-
-            console.log(resMat)
+            
             //genera el pdf
-            await fileController.genPdf(resMat,pdfCompleto,totalGen)
+            await fileController.genPdf(resMat,pdfCompleto,combos,totalGen)
             // Responder al cliente con un mensaje de confirmación
             return res.json({ status: 'Datos recibidos correctamente.', resMat,urlPdf:"http://localhost:3000/getPdf" });
         } catch (error) {

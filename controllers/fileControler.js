@@ -27,12 +27,13 @@ async function parseTextFile(txt) {
         throw err; // Lanzar el error para que pueda ser manejado por el llamador
     }
 }
-async function genPdf(dataInforme, pdfCompleto, totalGen) {
-      // Especificar la ruta del archivo donde se guardará el PDF
+async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
+    // Especificar la ruta del archivo donde se guardará el PDF
     const pdfDir = path.join(__dirname, '../pdf');
-    const fechaActual = new Date().toISOString().slice(0,10); // Obtener la fecha actual
+    const fechaActual = new Date().toISOString().slice(0, 10); // Obtener la fecha actual
     const fileName = `Informe_Ventas_Final_${fechaActual}.pdf`;
     const filePath = path.join(pdfDir, fileName);
+
     // Crear la carpeta "pdf" si no existe
     if (!fs.existsSync(pdfDir)) {
         fs.mkdirSync(pdfDir, { recursive: true });
@@ -76,6 +77,30 @@ async function genPdf(dataInforme, pdfCompleto, totalGen) {
                 ]
             }
         },
+        { text: '\n\n' }, // Espacio en blanco
+
+        // Tabla con datos de combos
+        {
+            table: {
+                headerRows: 1,
+                widths: ['auto', 'auto', 'auto', 'auto'],
+                body: [
+                    [
+                        { text: 'Producto', style: 'tableHeader' },
+                        { text: 'Importe', style: 'tableHeader' },
+                        { text: 'Cantidad', style: 'tableHeader' },
+                        { text: 'Total Indi', style: 'tableHeader' }
+                    ],
+                    ...combos.map(combo => [
+                        combo.producto,
+                        combo.importe,
+                        combo.cantidad,
+                        combo.totalIndi
+                    ])
+                ]
+            }
+        },
+
         { text: '\n\n' }, // Espacio en blanco
 
         // Total general

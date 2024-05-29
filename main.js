@@ -1,3 +1,4 @@
+//dependecias nsesarias
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path'); // Importa el módulo 'path' para trabajar con rutas de archivos
@@ -5,11 +6,13 @@ const app = express();
 // Controladores
 const fileController = require("./controllers/fileControler");
 const LoadRequestData = require('./controllers/loadRequestData');
-const CalculatorController = require("./controllers/calControler"); // Corrección del nombre de la clase y la importación
-// Configuraciones
+const CalculatorController = require("./controllers/calControler"); 
+const productController = require("./controllers/productController")
+// Configuraciones de ejs
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-
+//configura body parser
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // Ruta para mostrar el formulario
@@ -18,32 +21,32 @@ app.get('/', (req, res) => {
 });
 
 var informeVentas  = null;
-// Ruta para manejar el envío de datos al servidor
+let pdfCompleto = {}
+// Ruta para leer el txt
 app.post('/readFiles', async (req, res) => {
     const txt = req.body.txt;
     try {
         informeVentas = await fileController.parseTextFile(txt); // Llamar al controlador para parsear el texto
-        res.send({msg:"ok",url:"http://localhost:3000/llenarDatos"})
+        return res.send({msg:"ok",url:"http://localhost:3000/llenarDatos"})
         // Enviar una respuesta al cliente
     } catch (error) {
         console.error('Error al parsear el texto:', error);
-        res.status(500).json({ error: 'Error al parsear el texto.' });
+        return res.status(500).json({ error: 'Error al parsear el texto.' });
     }
 });
-
+//ruta para pedir los datos nsesarios para el informe final
 app.get("/llenarDatos",(req,res)=>{
     if (informeVentas== null) {
         res.redirect("/")
     }
-    const dataControl = new LoadRequestData(); // Corrección: se añade el new para crear una instancia de LoadRequestData
+    const dataControl = new LoadRequestData();
     dataControl.getIntData(req,res);
 });
-let pdfCompleto = {}
+//ruta para hacer los calculos matematicos
 const calControl = new CalculatorController(); // Corrección: se añade el new para crear una instancia de CalculatorController
 app.post("/datosXCalculo", (req, res) => { calControl.hacerCalculos(req,res,informeVentas,pdfCompleto); });
-
+//ruta del pdf 
 app.get("/getPdf",(req,res)=>{
-    const filePath = path.join(__dirname, './pdf', 'hola.pdf');
     res.sendFile(pdfCompleto.filePath, (err) => {
         if (err) {
             console.error('Error al enviar el archivo PDF:', err);
@@ -53,6 +56,14 @@ app.get("/getPdf",(req,res)=>{
         }
     });
 })
+
+//ruta para gestionar productos
+const productControl = new productController()
+app.get("/getProducts", productControl.getProduct);
+app.post("/createProduct",productControl.createProduct)
+app.post("/deleteProduct/:idProduct", (req, res) => {
+    productControl.deletedProduct(req, res);
+});
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 3000;
