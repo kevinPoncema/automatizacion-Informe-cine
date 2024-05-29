@@ -39,6 +39,8 @@ class Calcular {
                     }
                      //calcula el total del producto 
                     obj.totalIndi = infoVentas.importe * infoVentas.cantidad;
+                    obj.precio = infoVentas.importe
+                    obj.venta = infoVentas.cantidad;
                     totalGen+= obj.totalIndi;
                     obj.balanceCombos = balanceCombos
                     obj.balanceInventario = data.inventarioReal-(obj.inventarioFinal+obj.balanceCombos)

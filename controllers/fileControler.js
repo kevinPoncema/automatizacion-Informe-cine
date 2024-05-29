@@ -41,81 +41,64 @@ async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
 
     // Definir el contenido del documento PDF
     pdfCompleto.content = [
-        { text: 'metrocinema megammal Informe de Ventas Final', style: 'header' },
+        { text: 'ENTRADAS Y SALIDAS DE REFRESQUERIA', style: 'header' },
+        { text: `Cajero: Juan  Fecha: ${new Date().toLocaleString()}`, style: 'subheader' },
         { text: '\n\n' }, // Espacio en blanco
 
         // Tabla con datos de dataInforme
         {
             table: {
                 headerRows: 1,
-                widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
                 body: [
                     [
-                        { text: 'Producto', style: 'tableHeader' },
+                        { text: 'ARTICULO', style: 'tableHeader' },
                         { text: 'Inventario Inicial', style: 'tableHeader' },
                         { text: 'Entrada', style: 'tableHeader' },
                         { text: 'Salida', style: 'tableHeader' },
-                        { text: 'Inventario Real', style: 'tableHeader' },
                         { text: 'Total Productos', style: 'tableHeader' },
                         { text: 'Inventario Final', style: 'tableHeader' },
-                        { text: 'Total Indi', style: 'tableHeader' },
-                        { text: 'Balance Inventario', style: 'tableHeader' },
-                        { text: 'Balance Combos', style: 'tableHeader' }
+                        { text: 'VENTA', style: 'tableHeader' },
+                        { text: 'PRECIO', style: 'tableHeader' },
+                        { text: 'Total', style: 'tableHeader' },
                     ],
                     ...dataInforme.map(item => [
                         item.productName,
                         item.inventoryInitial,
                         item.entrada,
                         item.salida,
-                        item.inventarioReal,
                         item.TotalProductos,
                         item.inventarioFinal,
+                        item.venta,
+                        item.precio,
                         item.totalIndi,
-                        item.balanceInventario,
-                        item.balanceCombos
-                    ])
-                ]
-            }
-        },
-        { text: '\n\n' }, // Espacio en blanco
-
-        // Tabla con datos de combos
-        {
-            table: {
-                headerRows: 1,
-                widths: ['auto', 'auto', 'auto', 'auto'],
-                body: [
-                    [
-                        { text: 'Producto', style: 'tableHeader' },
-                        { text: 'Importe', style: 'tableHeader' },
-                        { text: 'Cantidad', style: 'tableHeader' },
-                        { text: 'Total Indi', style: 'tableHeader' }
-                    ],
+                    ]),
                     ...combos.map(combo => [
                         combo.producto,
-                        combo.importe,
+                        '-', // No hay inventario inicial para combos
+                        '-', // No hay entrada para combos
+                        '-', // No hay salida para combos
+                        '-', // No hay total productos para combos
+                        '-', // No hay inventario final para combos
                         combo.cantidad,
-                        combo.totalIndi
+                        combo.importe,
+                        combo.totalIndi,
                     ])
                 ]
             }
         },
-
         { text: '\n\n' }, // Espacio en blanco
 
         // Total general
-        { text: `Total general: ${totalGen}`, style: 'total' },
-
-        // Empleado y fecha
-        { text: `\n\nEmpleado: Juan\nFecha: ${new Date().toLocaleString()}`, style: 'footer' }
+        { text: `Total general: ${totalGen}`, style: 'total' }
     ];
 
     // Estilos para el PDF
     pdfCompleto.styles = {
         header: { fontSize: 20, bold: true, alignment: 'center' },
-        tableHeader: { bold: true, alignment: 'center' },
-        total: { bold: true, alignment: 'right' },
-        footer: { fontSize: 12, alignment: 'right' }
+        subheader: { fontSize: 12, alignment: 'center' },
+        tableHeader: { bold: true, alignment: 'center', fontSize: 10 },
+        total: { bold: true, alignment: 'right', fontSize: 12 }
     };
 
     // Generar el PDF
@@ -129,7 +112,6 @@ async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
         pdfCompleto.filePath = filePath;
     });
 }
-
 module.exports = {
     parseTextFile,
     genPdf
