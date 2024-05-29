@@ -8,6 +8,7 @@ const fileController = require("./controllers/fileControler");
 const LoadRequestData = require('./controllers/loadRequestData');
 const CalculatorController = require("./controllers/calControler"); 
 const productController = require("./controllers/productController")
+const empleadoController = require("./controllers/empleadoController")
 // Configuraciones de ejs
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -64,7 +65,10 @@ app.post("/createProduct",productControl.createProduct)
 app.post("/deleteProduct/:idProduct", (req, res) => {
     productControl.deletedProduct(req, res);
 });
-
+const empleadoControl = new empleadoController()
+app.get("/getEmpleado", empleadoControl.getEmpleado);
+app.post("/deleteEmployee/:idProduct", empleadoControl.deletedEmpleado);
+app.post("/createEmployee",empleadoControl.createEmpleado)
 // Iniciar el servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
