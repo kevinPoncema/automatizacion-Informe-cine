@@ -27,8 +27,12 @@ app.post('/readFiles', async (req, res) => {
     const txt = req.body.txt;
     try {
         informeVentas = await fileController.parseTextFile(txt); // Llamar al controlador para parsear el texto
+        const [nombre, id] = req.body.empleado.split(',');
+        pdfCompleto.cajero =   nombre ;
+        pdfCompleto.cajeroId = id;
+
         return res.send({msg:"ok",url:"http://localhost:3000/llenarDatos"})
-        pdfCompleto.cajero = req,body.empleado
+        
         // Enviar una respuesta al cliente
     } catch (error) {
         console.error('Error al parsear el texto:', error);

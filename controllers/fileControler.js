@@ -40,9 +40,10 @@ async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
     }
 
     // Definir el contenido del documento PDF
+    const cajero = pdfCompleto.cajero;
     pdfCompleto.content = [
         { text: 'ENTRADAS Y SALIDAS DE REFRESQUERIA', style: 'header' },
-        { text: `Cajero: Juan  Fecha: ${new Date().toLocaleString()}`, style: 'subheader' },
+        { text: `Cajero: ${cajero}  Fecha: ${new Date().toLocaleString()}`, style: 'subheader' },
         { text: '\n\n' }, // Espacio en blanco
 
         // Tabla con datos de dataInforme

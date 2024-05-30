@@ -57,7 +57,7 @@ class Calcular {
             //guarda los resultados en la db
             const modeloCombos = new ComboModel();
             const jsonData = JSON.stringify([resMat]); 
-            const idEmpleado = 1;
+            const idEmpleado =  pdfCompleto.cajeroId
             modeloCombos.sendInfoVentaJson([jsonData, idEmpleado])
             
             //genera el pdf

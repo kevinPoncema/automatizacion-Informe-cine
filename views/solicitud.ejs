@@ -4,126 +4,147 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Productos</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+    <!-- Menú de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">
+            <img src="path/to/home/icon.png" width="30" height="30" alt="Home">
+        </a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/getEmpleado">Gestionar Empleados</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/getProducts">Gestionar Productos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/getCombo">Gestionar Combos</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
-    <h1>Lista de Productos</h1>
-    <form id="product-form" class="product-form">
-        <% pro.forEach((p, index) => { %>
-            <div class="product-section">
-                <div>
-                    <label>Producto:</label>
-                    <span data-product-index="<%= index %>"><%= p.nombre_prod %></span>
+    <div class="container mt-5">
+        <h1 class="text-center">Lista de Productos</h1>
+        <form id="product-form" class="product-form">
+            <% pro.forEach((p, index) => { %>
+                <div class="product-section mb-4 p-3 border rounded">
+                    <div>
+                        <label>Producto:</label>
+                        <span data-product-index="<%= index %>"><%= p.nombre_prod %></span>
+                    </div>
+                    <div class="product-inputs">
+                        <label for="inventario_inicial_<%= index %>">Inventario Inicial:</label>
+                        <input type="number" class="form-control" id="inventario_inicial_<%= index %>" name="inventario_inicial">
+                        <label for="entrada_<%= index %>">Entrada:</label>
+                        <input type="number" class="form-control" id="entrada_<%= index %>" name="entrada">
+                        <label for="salida_<%= index %>">Salida:</label>
+                        <input type="number" class="form-control" id="salida_<%= index %>" name="salida">
+                        <label for="inventario_real_<%= index %>">Inventario Real:</label>
+                        <input type="number" class="form-control" id="inventario_real_<%= index %>" name="inventario_real">
+                    </div>
                 </div>
-                <div class="product-inputs">
-                    <label for="inventario_inicial_<%= index %>">Inventario Inicial:</label>
-                    <input type="number" id="inventario_inicial_<%= index %>" name="inventario_inicial">
-                    <label for="entrada_<%= index %>">Entrada:</label>
-                    <input type="number" id="entrada_<%= index %>" name="entrada">
-                    <label for="salida_<%= index %>">Salida:</label>
-                    <input type="number" id="salida_<%= index %>" name="salida">
-                    <label for="inventario_real_<%= index %>">Inventario Real:</label>
-                    <input type="number" id="inventario_real_<%= index %>" name="inventario_real">
-                </div>
-            </div>
-        <% }); %>
-        <!-- Eliminamos el atributo onclick y agregamos un identificador al botón -->
-        <button type="button" id="save-button">Guardar</button>
-    </form>
+            <% }); %>
+            <button type="button" id="save-button" class="btn btn-primary btn-block">Guardar</button>
+        </form>
+    </div>
+
     <script>
-        const saveButton = document.getElementById('save-button');
-        const productForm = document.getElementById('product-form');
+        document.addEventListener('DOMContentLoaded', function() {
+            const saveButton = document.getElementById('save-button');
+            const productForm = document.getElementById('product-form');
 
-        function loadProductData() {
-            const productSections = productForm.querySelectorAll('.product-section');
-            const productsData = [];
+            function loadProductData() {
+                const productSections = productForm.querySelectorAll('.product-section');
+                const productsData = [];
 
-            productSections.forEach(section => {
-                const productIndex = section.querySelector('span').getAttribute('data-product-index');
-                const productName = section.querySelector('span').textContent;
-                const inventoryInitial = section.querySelector('#inventario_inicial_' + productIndex).value;
-                const entrada = section.querySelector('#entrada_' + productIndex).value;
-                const salida = section.querySelector('#salida_' + productIndex).value;
-                const inventarioReal = section.querySelector('#inventario_real_' + productIndex).value;
+                productSections.forEach(section => {
+                    const productIndex = section.querySelector('span').getAttribute('data-product-index');
+                    const productName = section.querySelector('span').textContent;
+                    const inventoryInitial = section.querySelector('#inventario_inicial_' + productIndex).value;
+                    const entrada = section.querySelector('#entrada_' + productIndex).value;
+                    const salida = section.querySelector('#salida_' + productIndex).value;
+                    const inventarioReal = section.querySelector('#inventario_real_' + productIndex).value;
 
-                productsData.push({
-                    productName: productName,
-                    inventoryInitial: parseFloat(inventoryInitial),
-                    entrada: parseFloat(entrada),
-                    salida: parseFloat(salida),
-                    inventarioReal: parseFloat(inventarioReal),
+                    productsData.push({
+                        productName: productName,
+                        inventoryInitial: parseFloat(inventoryInitial),
+                        entrada: parseFloat(entrada),
+                        salida: parseFloat(salida),
+                        inventarioReal: parseFloat(inventarioReal),
+                    });
                 });
-            });
 
-            return productsData;
-        }
-
-        // Asignamos el evento click al botón usando JavaScript
-        saveButton.addEventListener('click', async () => {
-            const productsData = loadProductData();
-
-            try {
-                const response = await fetch('/datosXCalculo', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(productsData)
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log(data);
-                    if(data.status === 'Error al obtener los datos'){
-                        alert('Error al enviar los datos.');
-                    }else{
-                        console.log(data.urlPdf)
-                        window.open(data.urlPdf, '_blank'); // Abrir el PDF en una nueva pestaña
-                        alert('Datos enviados correctamente. Se abrirá el PDF.'); // Mensaje opcional
-                    }
-                } else {
-                    console.error('Error al enviar los datos.');
-                }
-            } catch (error) {
-                console.error('Error de red:', error);
+                return productsData;
             }
+
+            saveButton.addEventListener('click', async () => {
+                const productsData = loadProductData();
+
+                try {
+                    const response = await fetch('/datosXCalculo', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(productsData)
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log(data);
+                        if(data.status === 'Error al obtener los datos'){
+                            alert('Error al enviar los datos.');
+                        }else{
+                            console.log(data.urlPdf)
+                            window.open(data.urlPdf, '_blank'); // Abrir el PDF en una nueva pestaña
+                            alert('Datos enviados correctamente. Se abrirá el PDF.'); // Mensaje opcional
+                        }
+                    } else {
+                        console.error('Error al enviar los datos.');
+                    }
+                } catch (error) {
+                    console.error('Error de red:', error);
+                }
+            });
         });
     </script>
+
+    <style>
+        .product-form {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+        .product-inputs {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .product-inputs label {
+            width: 150px;
+            margin-right: 10px;
+        }
+        .product-inputs input {
+            flex: 1;
+            padding: 5px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .product-form button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .product-form button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </body>
 </html>
-
-<!-- Estilos movidos al final del documento -->
-<style>
-    body {
-        font-family: Arial, sans-serif;
-    }
-    .product-form {
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 20px;
-    }
-    .product-form .product-inputs {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center; /* Align inputs in the center vertically */
-    }
-    .product-form label {
-        width: 150px;
-        margin-right: 10px;
-    }
-    .product-form input {
-        flex: 1;
-        padding: 5px;
-        margin-right: 10px;
-    }
-    .product-form button {
-        padding: 10px 20px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        cursor: pointer;
-        margin-top: 10px; /* Added margin-top for spacing */
-    }
-    .product-form button:hover {
-        background-color: #45a049;
-    }
-</style>

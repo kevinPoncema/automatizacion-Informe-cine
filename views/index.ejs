@@ -45,7 +45,7 @@
                         <label for="empleado">Empleado</label>
                         <select class="form-control" id="empleado" name="empleado" required>
                             <% empleados.forEach(function(empleado) { %>
-                                <option value="<%= empleado.nombre_empleado %>"><%= empleado.nombre_empleado %></option>
+                                <option value="<%= empleado.nombre_empleado %>,<%= empleado.id_empleado %>"><%= empleado.nombre_empleado %></option>
                             <% }); %>
                         </select>
                     </div>
