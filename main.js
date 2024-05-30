@@ -18,9 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // Ruta para mostrar el formulario
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+app.get('/', empleadoController.getEmpleadoForMainSelect)
 
 var informeVentas  = null;
 let pdfCompleto = {}
@@ -30,6 +28,7 @@ app.post('/readFiles', async (req, res) => {
     try {
         informeVentas = await fileController.parseTextFile(txt); // Llamar al controlador para parsear el texto
         return res.send({msg:"ok",url:"http://localhost:3000/llenarDatos"})
+        pdfCompleto.cajero = req,body.empleado
         // Enviar una respuesta al cliente
     } catch (error) {
         console.error('Error al parsear el texto:', error);

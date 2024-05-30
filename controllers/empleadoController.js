@@ -37,6 +37,19 @@ class empleadoController {
             res.status(500).send('Error al obtener los datos');
         }
     }
+    static async getEmpleadoForMainSelect(req, res) {
+        try {
+            const modelo = new empleadoModel(); // Crear una instancia del modelo
+            const data = await modelo.getEmpleado([]);
+            res.render("index", { empleados: data.rows });
+
+        } catch (error) {
+            console.error('Error al obtener los datos:', error);
+            res.status(500).send('Error al obtener los datos');
+        }
+    }
 }
+
+
 
 module.exports = empleadoController;

@@ -3,31 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Empleados</title>
+    <title>Lista de Combos</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="http://localhost:3000/">
+            <i class="fas fa-home"></i>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:3000/getEmpleado">Gestionar Empleados</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:3000/getProducts">Gestionar Productos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:3000/getCombo">Gestionar Combos</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
     <div class="container mt-5">
-        <div class="container mt-5">
-            <h1 class="text-center">Lista de Combos</h1>
-            <div class="row mt-4">
-                <div class="col-md-6 offset-md-3">
-                    <form id="productForm" method="post" action="/createCombo">
-                        <div class="form-group">
-                            <label for="nombre_prod">Nombre del Producto</label>
-                            <input type="text" class="form-control" id="nombre_combo" name="nombre_combo" placeholder="Ingrese el nombre del Combo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="categoria">Categoría</label>
-                            <select class="form-control" id="categoria_combo" name="categoria_combo" required>
-                                <option value="n">Normal</option>
-                                <option value="v">VIP</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block">Agregar Producto</button>
-                    </form>
-                </div>
+        <h1 class="text-center">Lista de Combos</h1>
+        <div class="row mt-4">
+            <div class="col-md-6 offset-md-3">
+                <form id="productForm" method="post" action="/createCombo">
+                    <div class="form-group">
+                        <label for="nombre_prod">Nombre del Producto</label>
+                        <input type="text" class="form-control" id="nombre_combo" name="nombre_combo" placeholder="Ingrese el nombre del Combo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoria">Categoría</label>
+                        <select class="form-control" id="categoria_combo" name="categoria_combo" required>
+                            <option value="n">Normal</option>
+                            <option value="v">VIP</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Agregar Producto</button>
+                </form>
             </div>
+        </div>
 
         <div class="row mt-5">
             <div class="col-md-12">
@@ -37,6 +61,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Nombre</th>
+                            <th>Categoría</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -44,8 +69,8 @@
                         <% combos.forEach(function(combo) { %>
                             <tr>
                                 <td><%= combo.combo_id %></td>
-                                <td><%= combo.nombre_combo%></td>
-                                <td><%= combo.categoria_combo%></td>
+                                <td><%= combo.nombre_combo %></td>
+                                <td><%= combo.categoria_combo %></td>
                                 <td>
                                     <form action="/deleteCombo/<%= combo.combo_id %>" method="post" class="deleteForm">
                                         <button class="btn btn-danger btn-sm" type="submit">Borrar</button>
