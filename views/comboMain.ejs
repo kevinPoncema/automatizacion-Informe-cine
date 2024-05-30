@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Empleados</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="container mt-5">
+            <h1 class="text-center">Lista de Combos</h1>
+            <div class="row mt-4">
+                <div class="col-md-6 offset-md-3">
+                    <form id="productForm" method="post" action="/createCombo">
+                        <div class="form-group">
+                            <label for="nombre_prod">Nombre del Producto</label>
+                            <input type="text" class="form-control" id="nombre_combo" name="nombre_combo" placeholder="Ingrese el nombre del Combo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="categoria">Categoría</label>
+                            <select class="form-control" id="categoria_combo" name="categoria_combo" required>
+                                <option value="n">Normal</option>
+                                <option value="v">VIP</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Agregar Producto</button>
+                    </form>
+                </div>
+            </div>
+
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <h2 class="text-center">Lista de Empleados</h2>
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% combos.forEach(function(combo) { %>
+                            <tr>
+                                <td><%= combo.combo_id %></td>
+                                <td><%= combo.nombre_combo%></td>
+                                <td><%= combo.categoria_combo%></td>
+                                <td>
+                                    <form action="/deleteCombo/<%= combo.combo_id %>" method="post" class="deleteForm">
+                                        <button class="btn btn-danger btn-sm" type="submit">Borrar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteForms = document.querySelectorAll('.deleteForm');
+            deleteForms.forEach(form => {
+                form.addEventListener('submit', function (event) {
+                    const confirmDelete = confirm('¿Estás seguro de que deseas borrar este empleado?');
+                    if (!confirmDelete) {
+                        event.preventDefault();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

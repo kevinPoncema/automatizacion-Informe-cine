@@ -9,6 +9,7 @@ const LoadRequestData = require('./controllers/loadRequestData');
 const CalculatorController = require("./controllers/calControler"); 
 const productController = require("./controllers/productController")
 const empleadoController = require("./controllers/empleadoController")
+const comboController = require("./controllers/comboController")
 // Configuraciones de ejs
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -69,6 +70,11 @@ const empleadoControl = new empleadoController()
 app.get("/getEmpleado", empleadoControl.getEmpleado);
 app.post("/deleteEmployee/:idProduct", empleadoControl.deletedEmpleado);
 app.post("/createEmployee",empleadoControl.createEmpleado)
+//entpoints de los combos
+const comboControl = new comboController()
+app.get("/getCombo", comboControl.getcombo);
+app.post("/deleteCombo/:idCombo", comboControl.deletedCombo);
+app.post("/createCombo",comboControl.createCombo)
 // Iniciar el servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
