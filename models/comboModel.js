@@ -51,6 +51,45 @@ class ComboModel {
         return data;
     }
 
+    async getAllProductForCombo(params) {
+        const conexion = new ConexionClass();
+        await conexion.conectar();
+        const sql = `SELECT can_pro, productos.nombre_prod,productos.id_prod FROM  detallet_combo 
+        INNER JOIN productos ON productos.id_prod = detallet_combo.id_pro
+        WHERE detallet_combo.id_combo = ?`;
+        const data = await conexion.queryParams(sql,params);
+        await conexion.desconectar();
+        return data;
+    }
+
+    async updateCombo(params) {
+        const conexion = new ConexionClass();
+        try {
+            await conexion.conectar();
+            const data = await conexion.queryModifay("INSERT INTO detallet_combo (id_combo,id_pro,can_pro) VALUES(?,?,?)", params);
+            await conexion.desconectar();
+            return data;
+        } catch (error) {
+            console.error('Error en la actualización del combo:', error);
+            throw error; // Re-lanzar el error para que el controlador lo maneje
+        }
+    }
+
+    async limpiarDetalleCombo(params) {
+        const conexion = new ConexionClass();
+        try {
+            await conexion.conectar();
+            const data = await conexion.queryModifay("DELETE FROM detallet_combo WHERE detallet_combo.id_combo = ?", params);
+            await conexion.desconectar();
+            return data;
+        } catch (error) {
+            console.error('Error en la actualización del combo:', error);
+            throw error; // Re-lanzar el error para que el controlador lo maneje
+        }
+    } 
+    
+
+
 }
 
 module.exports = ComboModel;

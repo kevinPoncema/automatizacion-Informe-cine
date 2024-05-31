@@ -78,6 +78,9 @@ const comboControl = new comboController()
 app.get("/getCombo", comboControl.getcombo);
 app.post("/deleteCombo/:idCombo", comboControl.deletedCombo);
 app.post("/createCombo",comboControl.createCombo)
+app.get("/editCombo/:idCombo", comboControl.getEditcomboView);
+app.post('/updateCombo/:idCombo', comboControl.updateCombo);
+
 // Iniciar el servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

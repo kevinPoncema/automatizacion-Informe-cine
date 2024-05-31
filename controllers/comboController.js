@@ -1,7 +1,7 @@
 const path = require('path');
 const express = require('express');
 const comboModel = require("../models/comboModel");
-
+const productModel = require("../models/productModel");
 class comboController {
     async getcombo(req, res) {
         try {
@@ -37,6 +37,44 @@ class comboController {
             res.status(500).send('Error al obtener los datos');
         }
     }
+
+    async getEditcomboView(req, res) {
+        try {
+            const modelo = new comboModel(); // Crear una instancia del modelo
+            const modeloProductos =new  productModel();
+            const data = await modelo.getAllProductForCombo([req.params.idCombo]);
+            const allProduct = await modeloProductos.getProducts([]);
+            res.render("editUi", { 
+                productos: data.rows, 
+                productosSelector: allProduct.rows, 
+                comboId: req.params.idCombo 
+            });
+        } catch (error) {
+            console.error('Error al obtener los datos:', error);
+            res.status(500).send('Error al obtener los datos');
+        }
+    }
+    
+
+    async updateCombo(req, res) {
+        try {
+            const { productos } = req.body;
+            const idCombo = req.params.idCombo;
+            const modelo = new comboModel(); // Crear una instancia del modelo
+            //elimina los dettales del combo 
+            await  modelo.limpiarDetalleCombo([idCombo])
+            // Lógica para actualizar los combos en la base de datos
+            for (const producto of productos) {
+                await modelo.updateCombo([idCombo, producto.id_prod, producto.can_pro]);
+            }
+            res.json({ success: true });
+        } catch (error) {
+            console.error('Error al actualizar los datos:', error);
+            res.status(500).json({ success: false });
+        }
+    }
+    
+    
 }
 
 module.exports = comboController;

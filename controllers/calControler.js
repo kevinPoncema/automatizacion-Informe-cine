@@ -23,7 +23,8 @@ class Calcular {
                 //obtiene los datos referentes al producto en informe de ventas
                 const infoVentas = informeSinCombos.find(item => item.producto.toUpperCase() === obj.productName.toUpperCase());
                 if (infoVentas) {//si se optienen los datos
-                    obj.TotalProductos = obj.inventoryInitial + obj.entrada - obj.salida;
+                    
+                    obj.TotalProductos = (obj.inventoryInitial + obj.entrada) - obj.salida;
                     obj.inventarioFinal = obj.TotalProductos - infoVentas.cantidad;
                     const modeloCombos = new ComboModel();
                     let balanceCombos = 0
@@ -32,8 +33,6 @@ class Calcular {
                         //console.log(result.rows[0][0].Cantidad_Producto)
                         //si el combo si contiene ese producto
                         if (result.rows[0].length >0) {
-                            //combo.cantidad = la cantidad de ese combo que se vendio
-                            //y rows.cantidad_producto = la cantidad de ese producto que incluye el combo
                             balanceCombos+= (combo.cantidad*result.rows[0][0].Cantidad_Producto)
                         }
                     }
@@ -43,7 +42,7 @@ class Calcular {
                     obj.venta = infoVentas.cantidad;
                     totalGen+= obj.totalIndi;
                     obj.balanceCombos = balanceCombos
-                    obj.balanceInventario = data.inventarioReal-(obj.inventarioFinal+obj.balanceCombos)
+                    obj.balanceInventario = obj.inventarioReal-(obj.inventarioFinal)
                     resMat.push(obj);
                 }
             }//fin for productos
@@ -62,6 +61,7 @@ class Calcular {
             
             //genera el pdf
             await fileController.genPdf(resMat,pdfCompleto,combos,totalGen)
+            console.log(resMat)
             // Responder al cliente con un mensaje de confirmación
             return res.json({ status: 'Datos recibidos correctamente.', resMat,urlPdf:"http://localhost:3000/getPdf" });
         } catch (error) {
