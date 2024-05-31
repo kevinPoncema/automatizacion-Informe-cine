@@ -1,1 +1,176 @@
-<h2>Hola </h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Combo</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+     <!-- Navbar -->
+     <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="http://localhost:3000/">
+            <i class="fas fa-home"></i>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:3000/getEmpleado">Gestionar Empleados</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:3000/getProducts">Gestionar Productos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:3000/getCombo">Gestionar Combos</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="text-center">Editar Combo</h1>
+
+        <!-- Selector de productos y botón de agregar -->
+        <div class="row mt-4">
+            <div class="col-md-8 offset-md-2">
+                <div class="form-inline">
+                    <select id="productSelector" class="form-control mr-2">
+                        <% productosSelector.forEach(function(producto) { %>
+                            <option value="<%= producto.id_prod %>"><%= producto.nombre_prod %></option>
+                        <% }); %>
+                    </select>
+                    <button id="addProductBtn" class="btn btn-success">Agregar Producto</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de productos del combo -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <table class="table table-striped table-bordered" id="productTable">
+                    <thead>
+                        <tr>
+                            <th>Nombre del Producto</th>
+                            <th>Cantidad</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% productos.forEach(function(producto) { %>
+                            <tr data-id="<%= producto.id_prod %>">
+                                <td class="product-name"><%= producto.nombre_prod %></td>
+                                <td>
+                                    <input type="number" class="form-control cantidad-input" value="<%= producto.can_pro %>" data-id="<%= producto.id_prod %>">
+                                </td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm delete-btn" type="button">Eliminar</button>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-12 text-center">
+                <button id="saveChanges" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Función para eliminar una fila de la tabla
+            function deleteRow(button) {
+                const row = button.closest('tr');
+                row.parentNode.removeChild(row);
+            }
+    
+            // Manejar el clic en el botón de eliminar
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    deleteRow(this);
+                });
+            });
+    
+            // Manejar el clic en el botón de agregar producto
+            document.getElementById('addProductBtn').addEventListener('click', function () {
+                const productSelector = document.getElementById('productSelector');
+                const selectedProductId = productSelector.value;
+                const selectedProductName = productSelector.options[productSelector.selectedIndex].text;
+    
+                // Verificar si el producto ya está en la lista recorriendo la tabla
+                const productNames = document.querySelectorAll('#productTable tbody .product-name');
+                for (let i = 0; i < productNames.length; i++) {
+                    if (productNames[i].innerText === selectedProductName) {
+                        alert('El producto ya está en la lista');
+                        return;
+                    }
+                }
+    
+                // Crear una nueva fila en la tabla
+                const newRow = document.createElement('tr');
+                newRow.setAttribute('data-id', selectedProductId);
+                newRow.innerHTML = `
+                    <td class="product-name">${selectedProductName}</td>
+                    <td>
+                        <input type="number" class="form-control cantidad-input" value="1" data-id="${selectedProductId}">
+                    </td>
+                    <td>
+                        <button class="btn btn-danger btn-sm delete-btn" type="button">Eliminar</button>
+                    </td>
+                `;
+    
+                // Agregar la nueva fila al tbody de la tabla
+                document.querySelector('#productTable tbody').appendChild(newRow);
+    
+                // Agregar el evento de clic al nuevo botón de eliminar
+                newRow.querySelector('.delete-btn').addEventListener('click', function () {
+                    deleteRow(this);
+                });
+            });
+    
+            // Manejar el clic en el botón de guardar cambios
+            document.getElementById('saveChanges').addEventListener('click', function () {
+                const productos = [];
+                document.querySelectorAll('.cantidad-input').forEach(function (input) {
+                    productos.push({
+                        id_prod: input.getAttribute('data-id'),
+                        can_pro: input.value
+                    });
+                });
+    
+                // Obtener la ID del combo de la URL
+                const urlParts = window.location.href.split('/');
+                const comboId = urlParts[urlParts.length - 1];
+    
+                // Enviar los datos al servidor incluyendo la ID del combo
+                fetch(`/updateCombo/${comboId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ comboId, productos }) // Incluir el ID del combo aquí
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Cambios guardados correctamente');
+                    } else {
+                        alert('Error al guardar los cambios');
+                    }
+                }).catch(error => {
+                    console.error('Error al guardar los cambios:', error);
+                    alert('Error al guardar los cambios');
+                });
+            });
+        });
+    </script>
+    
+</body>
+</html>
