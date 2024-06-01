@@ -50,7 +50,7 @@ async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
         {
             table: {
                 headerRows: 1,
-                widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
                 body: [
                     [
                         { text: 'ARTICULO', style: 'tableHeader' },
@@ -62,6 +62,9 @@ async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
                         { text: 'VENTA', style: 'tableHeader' },
                         { text: 'PRECIO', style: 'tableHeader' },
                         { text: 'Total', style: 'tableHeader' },
+                        { text: 'Balance Inv', style: 'tableHeader' },
+                        { text: 'Faltante', style: 'tableHeader' },
+                        { text: 'Sobrante', style: 'tableHeader' }
                     ],
                     ...dataInforme.map(item => [
                         item.productName,
@@ -73,6 +76,9 @@ async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
                         item.venta,
                         item.precio,
                         item.totalIndi,
+                        item.balanceInventario,
+                        item.faltante, // Faltante
+                        item.sobrante // Sobrante
                     ]),
                     ...combos.map(combo => [
                         combo.producto,
@@ -84,6 +90,9 @@ async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
                         combo.cantidad,
                         combo.importe,
                         combo.totalIndi,
+                        '-', // No hay balance inventario para combos
+                        '_', // Faltante
+                        '_', // Sobrante
                     ])
                 ]
             }
@@ -113,6 +122,7 @@ async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
         pdfCompleto.filePath = filePath;
     });
 }
+
 module.exports = {
     parseTextFile,
     genPdf

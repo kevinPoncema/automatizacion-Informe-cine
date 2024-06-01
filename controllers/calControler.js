@@ -37,12 +37,20 @@ class Calcular {
                         }
                     }
                      //calcula el total del producto 
-                    obj.totalIndi = infoVentas.importe * infoVentas.cantidad;
                     obj.precio = infoVentas.importe
                     obj.venta = infoVentas.cantidad;
-                    totalGen+= obj.totalIndi;
                     obj.balanceCombos = balanceCombos
+                    obj.venta+= balanceCombos
                     obj.balanceInventario = obj.inventarioReal-(obj.inventarioFinal)
+                    obj.totalIndi = obj.venta * obj.precio;
+                    totalGen+= obj.totalIndi;
+                    obj.sobrante =0;
+                    obj.faltante = 0;
+                    if (obj.balanceInventario >0) {
+                        obj.sobrante = obj.balanceInventario
+                    }else{
+                        obj.faltante = obj.balanceInventario
+                    }
                     resMat.push(obj);
                 }
             }//fin for productos
