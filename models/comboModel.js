@@ -89,6 +89,16 @@ class ComboModel {
     } 
     
 
+    static async esCombo (params) {
+        const conexion = new ConexionClass();
+        await conexion.conectar();
+        const sql = `CALL esCombo(?)`;
+        const data = await conexion.queryParams(sql,params);
+        if(data.rows[0].length >0 ) {return  {estatus:true,data:data.rows}}
+        await conexion.desconectar();
+        return {estatus:false,data:data.rows};
+    }
+
 
 }
 

@@ -27,6 +27,21 @@ async function parseTextFile(txt) {
         throw err; // Lanzar el error para que pueda ser manejado por el llamador
     }
 }
+
+function sanitizeItem(item) {
+    return {
+        productName: item.productName ?? '',
+        inventoryInitial: item.inventoryInitial ?? 0,
+        entrada: item.entrada ?? 0,
+        salida: item.salida ?? 0,
+        TotalProductos: item.TotalProductos ?? 0,
+        inventarioFinal: item.inventarioFinal ?? 0,
+        venta: item.venta ?? 0,
+        precio: item.precio ?? 0,
+        totalIndi: item.totalIndi ?? 0,
+    };
+}
+
 async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
     // Especificar la ruta del archivo donde se guardará el PDF
     const pdfDir = path.join(__dirname, '../pdf');
@@ -50,7 +65,7 @@ async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
         {
             table: {
                 headerRows: 1,
-                widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
                 body: [
                     [
                         { text: 'ARTICULO', style: 'tableHeader' },
@@ -62,24 +77,21 @@ async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
                         { text: 'VENTA', style: 'tableHeader' },
                         { text: 'PRECIO', style: 'tableHeader' },
                         { text: 'Total', style: 'tableHeader' },
-                        { text: 'Balance Inv', style: 'tableHeader' },
-                        { text: 'Faltante', style: 'tableHeader' },
-                        { text: 'Sobrante', style: 'tableHeader' }
                     ],
-                    ...dataInforme.map(item => [
-                        item.productName,
-                        item.inventoryInitial,
-                        item.entrada,
-                        item.salida,
-                        item.TotalProductos,
-                        item.inventarioFinal,
-                        item.venta,
-                        item.precio,
-                        item.totalIndi,
-                        item.balanceInventario,
-                        item.faltante, // Faltante
-                        item.sobrante // Sobrante
-                    ]),
+                    ...dataInforme.map(item => {
+                        const sanitizedItem = sanitizeItem(item);
+                        return [
+                            sanitizedItem.productName,
+                            sanitizedItem.inventoryInitial,
+                            sanitizedItem.entrada,
+                            sanitizedItem.salida,
+                            sanitizedItem.TotalProductos,
+                            sanitizedItem.inventarioFinal,
+                            sanitizedItem.venta,
+                            sanitizedItem.precio,
+                            sanitizedItem.totalIndi,
+                        ];
+                    }),
                     ...combos.map(combo => [
                         combo.producto,
                         '-', // No hay inventario inicial para combos
@@ -90,9 +102,6 @@ async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
                         combo.cantidad,
                         combo.importe,
                         combo.totalIndi,
-                        '-', // No hay balance inventario para combos
-                        '_', // Faltante
-                        '_', // Sobrante
                     ])
                 ]
             }
@@ -122,6 +131,7 @@ async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
         pdfCompleto.filePath = filePath;
     });
 }
+
 
 module.exports = {
     parseTextFile,

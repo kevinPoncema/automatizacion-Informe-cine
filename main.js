@@ -52,6 +52,7 @@ const calControl = new CalculatorController(); // Corrección: se añade el new 
 app.post("/datosXCalculo", (req, res) => { calControl.hacerCalculos(req,res,informeVentas,pdfCompleto); });
 //ruta del pdf 
 app.get("/getPdf",(req,res)=>{
+    console.log(pdfCompleto.filePath)
     res.sendFile(pdfCompleto.filePath, (err) => {
         if (err) {
             console.error('Error al enviar el archivo PDF:', err);
