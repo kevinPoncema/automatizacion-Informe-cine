@@ -54,13 +54,23 @@ class ComboModel {
     async getAllProductForCombo(params) {
         const conexion = new ConexionClass();
         await conexion.conectar();
-        const sql = `SELECT can_pro, productos.nombre_prod,productos.id_prod FROM  detallet_combo 
+        
+        const sql = `SELECT can_pro, productos.nombre_prod, productos.id_prod FROM detallet_combo 
         INNER JOIN productos ON productos.id_prod = detallet_combo.id_pro
         WHERE detallet_combo.id_combo = ?`;
-        const data = await conexion.queryParams(sql,params);
+        const data = await conexion.queryParams(sql, params);
+        
+        const comboSql = "SELECT combo.nombre_combo FROM combo WHERE combo.combo_id = ?";
+        const data2 = await conexion.queryParams(comboSql, params);
+        
+        // Asumiendo que data2.rows siempre tiene al menos un elemento
+        const comboName = data2.rows.length > 0 ? data2.rows[0].nombre_combo : null;
+        
         await conexion.desconectar();
-        return data;
+        
+        return { data: data, combo: comboName };
     }
+    
 
     async updateCombo(params) {
         const conexion = new ConexionClass();
