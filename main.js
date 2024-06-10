@@ -45,7 +45,7 @@ app.get("/llenarDatos",(req,res)=>{
         res.redirect("/")
     }
     const dataControl = new LoadRequestData();
-    dataControl.getIntData(req,res);
+    dataControl.getIntData(req,res,pdfCompleto);
 });
 //ruta para hacer los calculos matematicos
 const calControl = new CalculatorController(); // Corrección: se añade el new para crear una instancia de CalculatorController

@@ -23,6 +23,14 @@ class productModel {
         await conexion.desconectar();
         return data;
     }
+
+    static async getProductPrice(params){
+        const conexion = new ConexionClass();
+        await conexion.conectar(params);
+        const data = await conexion.queryParams("SELECT * FROM productos  WHERE productos.nombre_prod = ?",params);
+        await conexion.desconectar();
+        return data.rows[0]
+    }
 }
 
 module.exports = productModel;

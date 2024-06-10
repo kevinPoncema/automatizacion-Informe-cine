@@ -41,19 +41,24 @@ class comboController {
     async getEditcomboView(req, res) {
         try {
             const modelo = new comboModel(); // Crear una instancia del modelo
-            const modeloProductos =new  productModel();
-            const data = await modelo.getAllProductForCombo([req.params.idCombo]);
+            const modeloProductos = new productModel();
+            const dataMax = await modelo.getAllProductForCombo([req.params.idCombo]);
             const allProduct = await modeloProductos.getProducts([]);
+            const data = dataMax.data;
+            const name = dataMax.combo;
+    
             res.render("editUi", { 
                 productos: data.rows, 
                 productosSelector: allProduct.rows, 
-                comboId: req.params.idCombo 
+                comboId: req.params.idCombo,
+                comboName: name // Pasar el nombre del combo
             });
         } catch (error) {
             console.error('Error al obtener los datos:', error);
             res.status(500).send('Error al obtener los datos');
         }
     }
+    
     
 
     async updateCombo(req, res) {

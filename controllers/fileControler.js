@@ -39,6 +39,8 @@ function sanitizeItem(item) {
         venta: item.venta ?? 0,
         precio: item.precio ?? 0,
         totalIndi: item.totalIndi ?? 0,
+        sobrante: item.sobrante ?? 0,
+        faltante: item.faltante ?? 0,
     };
 }
 
@@ -65,18 +67,20 @@ async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
         {
             table: {
                 headerRows: 1,
-                widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
                 body: [
                     [
                         { text: 'ARTICULO', style: 'tableHeader' },
-                        { text: 'Inventario Inicial', style: 'tableHeader' },
+                        { text: 'Inv Inicial', style: 'tableHeader' },
                         { text: 'Entrada', style: 'tableHeader' },
                         { text: 'Salida', style: 'tableHeader' },
-                        { text: 'Total Productos', style: 'tableHeader' },
-                        { text: 'Inventario Final', style: 'tableHeader' },
+                        { text: 'Total Prod', style: 'tableHeader' },
+                        { text: 'Inv Final', style: 'tableHeader' },
                         { text: 'VENTA', style: 'tableHeader' },
                         { text: 'PRECIO', style: 'tableHeader' },
                         { text: 'Total', style: 'tableHeader' },
+                        { text: 'sobrante', style: 'tableHeader' },
+                        { text: 'faltante', style: 'tableHeader' },
                     ],
                     ...dataInforme.map(item => {
                         const sanitizedItem = sanitizeItem(item);
@@ -90,6 +94,8 @@ async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
                             sanitizedItem.venta,
                             sanitizedItem.precio,
                             sanitizedItem.totalIndi,
+                            sanitizedItem.sobrante,
+                            sanitizedItem.faltante,
                         ];
                     }),
                     ...combos.map(combo => [
@@ -102,6 +108,8 @@ async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
                         combo.cantidad,
                         combo.importe,
                         combo.totalIndi,
+                        '-', 
+                        '-', 
                     ])
                 ]
             }

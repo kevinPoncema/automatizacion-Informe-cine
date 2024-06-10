@@ -38,7 +38,7 @@
                     </div>
                     <div class="product-inputs">
                         <label for="inventario_inicial_<%= index %>">Inventario Inicial:</label>
-                        <input type="number" class="form-control" id="inventario_inicial_<%= index %>" name="inventario_inicial">
+                        <input type="number" class="form-control" id="inventario_inicial_<%= index %>" name="inventario_inicial" value="<%= p.inventario_inicial !== undefined ? p.inventario_inicial : 0 %>">
                         <label for="entrada_<%= index %>">Entrada:</label>
                         <input type="number" class="form-control" id="entrada_<%= index %>" name="entrada">
                         <label for="salida_<%= index %>">Salida:</label>

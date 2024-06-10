@@ -1,7 +1,7 @@
 const path = require('path');
 const express = require('express');
-const productModel = require("../models/productModel");
 
+const productModel = require("../models/productModel");
 class productController {
     async getProduct(req, res) {
         try {
