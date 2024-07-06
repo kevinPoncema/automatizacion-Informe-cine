@@ -48,6 +48,11 @@
                             <option value="v">VIP</option>
                         </select>
                     </div>
+
+                    <div class="form-group">
+                        <label for="nombre_prod">precio producto</label>
+                        <input type="text" class="form-control" id="nombre_prod" name="precio_prod" placeholder="Ingrese el nombre del producto" required>
+                    </div>
                     <button type="submit" class="btn btn-primary btn-block">Agregar Producto</button>
                 </form>
             </div>
@@ -62,6 +67,7 @@
                             <th>ID</th>
                             <th>Nombre</th>
                             <th>Categoría</th>
+                            <th>Precio</th>
                             <th>Fecha de Registro</th>
                             <th>Acciones</th>
                         </tr>
@@ -72,6 +78,7 @@
                                 <td><%= producto.id_prod %></td>
                                 <td><%= producto.nombre_prod %></td>
                                 <td><%= producto.categoria %></td>
+                                <td><%= producto.precio_prod %></td>
                                 <td><%= new Date(producto.fecha_reg).toLocaleString() %></td>
                                 <td>
                                     <form action="/deleteProduct/<%= producto.id_prod %>" method="post" class="deleteForm" style="display:inline;">

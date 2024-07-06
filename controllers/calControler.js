@@ -37,6 +37,7 @@ class Calcular {
                 }
 
                 resMat.push(obj);
+                console.log(resMat)
             }
             //hace el calculo de loa combos
             combos.forEach((combo) => {
@@ -50,7 +51,7 @@ class Calcular {
             await modeloCombos.sendInfoVentaJson([jsonData, idEmpleado]);
             //genera el pdf
             await fileController.genPdf(resMat, pdfCompleto, combos, this.totalGen);
-            console.log(resMat);
+            //console.log(resMat);
             //respuesta del usuario
             return res.json({ status: 'Datos recibidos correctamente.', resMat, urlPdf: "http://localhost:3000/getPdf" });
         } catch (error) {
@@ -96,30 +97,38 @@ class Calcular {
             obj.faltante = obj.balanceInventario;
         }
     }
-    //si no hay referencia  en el txt solo hace el balance de combos
+
     async calcularProductoSinVentas(obj, combos) {
-        const modeloCombos = new ComboModel();
-        let balanceCombos = 0;
-        for (const combo of combos) {
-            const result = await modeloCombos.comboIncludeProduct([obj.productName,combo.producto]);
-            if (result.rows[0].length >0) {
-                balanceCombos += (combo.cantidad * result.rows[0][0].Cantidad_Producto);
-            }
-        }
-        obj.venta = balanceCombos;
-        proDataDb = await productModel.getProductPrice([obj.productName])
-        obj.precio = proDataDb.precio_prod; 
-        obj.totalIndi = obj.precio*obj.venta;
-        obj.balanceInventario = obj.inventarioReal - obj.inventarioFinal;
-        this.totalGen += obj.totalIndi;
-        obj.sobrante = 0;
-        obj.faltante = 0;
-        if (obj.balanceInventario > 0) {
-            obj.sobrante = obj.balanceInventario;
-        } else {
-            obj.faltante = obj.balanceInventario;
+    const modeloCombos = new ComboModel();
+    let balanceCombos = 0;
+    let precioProducto = 0;
+    //calcula el balance combos
+    for (const combo of combos) {
+        const result = await modeloCombos.comboIncludeProduct([obj.productName, combo.producto]);
+        if (result.rows[0].length > 0) {
+            balanceCombos += (combo.cantidad * result.rows[0][0].Cantidad_Producto);
         }
     }
+
+    obj.venta = balanceCombos;
+    let proDataDb = await productModel.getProductPrice([obj.productName]);
+    //console.log(proDataDb, obj.productName);
+    precioProducto = proDataDb ? proDataDb.precio_prod : 0; // Almacenar el precio del producto
+    obj.totalIndi = precioProducto * obj.venta; // Utilizar precioProducto en lugar de obj.precio
+    obj.TotalProductos = (obj.inventoryInitial + obj.entrada) - obj.salida;
+    obj.inventarioFinal = obj.TotalProductos - obj.venta;
+    obj.balanceInventario = obj.inventarioReal - obj.inventarioFinal;
+    obj.precioProducto = obj.precio;
+    this.totalGen += obj.totalIndi;
+    obj.sobrante = 0;
+    obj.faltante = 0;
+    if (obj.balanceInventario > 0) {
+        obj.sobrante = obj.balanceInventario;
+    } else {
+       // console.log(obj.balanceInventario,obj.inventarioReal,obj.inventarioFinal,obj.TotalProductos,obj.venta)
+        obj.faltante = obj.balanceInventario;
+    }
+}
 }
 
 module.exports = Calcular;

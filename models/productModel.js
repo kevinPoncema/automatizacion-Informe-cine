@@ -11,7 +11,7 @@ class productModel {
     async createProducts(params) {
         const conexion = new ConexionClass();
         await conexion.conectar(params);
-        const data = await conexion.queryModifay("INSERT INTO productos(nombre_prod,categoria) VALUES (?,?)",params);
+        const data = await conexion.queryModifay("INSERT INTO productos(nombre_prod,categoria,precio_prod) VALUES (?,?,?)",params);
         await conexion.desconectar();
         return data;
     }

@@ -17,9 +17,9 @@ class productController {
 
     async createProduct(req, res) {
         try {
-            const { nombre_prod, categoria } = req.body;
+            const { nombre_prod, categoria,precio_prod } = req.body;
             const modelo = new productModel(); // Crear una instancia del modelo
-            const data = await modelo.createProducts([nombre_prod,categoria]);
+            const data = await modelo.createProducts([nombre_prod,categoria,precio_prod]);
             res.redirect("/getProducts")
         } catch (error) {
             console.error('Error al obtener los datos:', error);

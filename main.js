@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path'); // Importa el módulo 'path' para trabajar con rutas de archivos
 const app = express();
+const { exec } = require('child_process');
 // Controladores
 const fileController = require("./controllers/fileControler");
 const LoadRequestData = require('./controllers/loadRequestData');
@@ -87,4 +88,13 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor Express escuchando en el puerto ${PORT}
     http://localhost:${PORT}/`);
+
+     // Ejecutar comando para abrir el navegador predeterminado
+     exec(`start http://localhost:${PORT}`, (err, stdout, stderr) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        console.log(stdout);
+    });
 });
