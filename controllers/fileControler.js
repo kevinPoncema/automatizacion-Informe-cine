@@ -1,5 +1,6 @@
 const pdfMake = require('pdfmake/build/pdfmake');
 const pdfFonts = require('pdfmake/build/vfs_fonts');
+const dataModel = require("../models/requestDataModel");
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const fs = require('fs');
 const path = require('path');
@@ -138,10 +139,122 @@ async function genPdf(dataInforme, pdfCompleto, combos, totalGen) {
         pdfCompleto.status = true;
         pdfCompleto.filePath = filePath;
     });
+
 }
 
+async function genInveSheet(idEmp, nomEmp) {
+    let modelo = new dataModel();
+    // Obtener la lista de productos
+    let categoria = nomEmp !== "vip" ? "n" : "vip";
+    const data = await modelo.getIncialData([categoria]);
+    // Obtener el inventario final del día anterior
+    const previousInventoryData = await modelo.getFinalInventoryOfPreviousDay(idEmp);
+    let cleanedData = [];
+    if (!previousInventoryData.rows.length) {
+        // Si no hay datos de inventario anterior, establece el inventario inicial en 0 para todos los productos
+        cleanedData = data.rows.map(product => ({
+            nombre_prod: product.pro.replace(/[\r\n#+-]+/g, ''),
+            inventario_inicial: 0,
+        }));
+    } else {
+        const previousInventory = JSON.parse(previousInventoryData.rows[0].invFinal);
+        // Limpiar los datos eliminando \r\n y asignar inventario inicial basado en el inventario anterior
+        cleanedData = data.rows.map(product => {
+            const productName = product.pro.replace(/[\r\n#+-]+/g, '');
+            const productInPreviousInventory = previousInventory.flat().find(item => item.productName === productName);
+            let inventarioInicial = productInPreviousInventory ? productInPreviousInventory.inventarioFinal : 0;
+        
+            // Asegurarse de que el inventario inicial no sea menor que 0
+            inventarioInicial = Math.max(inventarioInicial, 0);
+        
+            return {
+                nombre_prod: productName,
+                inventario_inicial: inventarioInicial,
+            };
+        });
+    }
 
+    // Especificar la ruta del archivo donde se guardará el PDF
+    const pdfDir = path.join(__dirname, '../pdf');
+    const fechaActual = new Date().toISOString().slice(0, 10); // Obtener la fecha actual
+    const fileName = `Reporte_Inventario_${fechaActual}_${nomEmp}.pdf`;
+    const filePath = path.join(pdfDir, fileName);
+
+    // Crear la carpeta "pdf" si no existe
+    if (!fs.existsSync(pdfDir)) {
+        fs.mkdirSync(pdfDir, { recursive: true });
+    }
+
+    // Definir el contenido del documento PDF
+    const docDefinition = {
+        content: [
+            { text: 'REPORTE DE INVENTARIO', style: 'header' },
+            { text: `cajero:${nomEmp} \tFecha: ${new Date().toLocaleString()}`, style: 'subheader' },
+            { text: '\n\n' }, // Espacio en blanco
+
+            // Tabla con datos de cleanedData
+            {
+                table: {
+                    headerRows: 1,
+                    widths: ['*', '*', '*', '*', '*'],
+                    body: [
+                        [
+                            { text: 'ARTICULO', style: 'tableHeader' },
+                            { text: 'INVENTARIO INICIAL', style: 'tableHeader' },
+                            { text: 'ENTRADA', style: 'tableHeader' },
+                            { text: 'SALIDA', style: 'tableHeader' },
+                            { text: 'FINAL', style: 'tableHeader' }
+                        ],
+                        ...cleanedData.map(item => [
+                            item.nombre_prod,
+                            item.inventario_inicial,
+                            '', // Entrada
+                            '', // Salida
+                            ''  // Final
+                        ])
+                    ]
+                }
+            },
+            { text: '\n\n' }, // Espacio en blanco
+        ],
+        styles: {
+            header: { fontSize: 20, bold: true, alignment: 'center' },
+            subheader: { fontSize: 12, alignment: 'center' },
+            tableHeader: { bold: true, alignment: 'center', fontSize: 10 },
+            total: { bold: true, alignment: 'right', fontSize: 12 }
+        }
+    };
+
+    // Crear una función que envuelve pdfDocGenerator.getBuffer en una promesa
+    function getPdfBuffer() {
+        return new Promise((resolve, reject) => {
+            pdfMake.createPdf(docDefinition).getBuffer((buffer) => {
+                if (buffer) {
+                    resolve(buffer);
+                } else {
+                    reject(new Error('Error al generar el buffer del PDF'));
+                }
+            });
+        });
+    }
+
+    try {
+        // Esperar a que el buffer del PDF se genere
+        const buffer = await getPdfBuffer();
+        // Guardar el PDF en el servidor
+        fs.writeFileSync(filePath, buffer);
+        console.log('PDF guardado en ' + filePath);
+        console.log(cleanedData);
+        return filePath;
+    } catch (error) {
+        console.error('Error al generar el PDF:', error);
+        throw error; // Lanzar error para manejarlo en el endpoint
+    }
+}
+
+    
 module.exports = {
     parseTextFile,
-    genPdf
+    genPdf,
+    genInveSheet
 };

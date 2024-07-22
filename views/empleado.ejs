@@ -63,7 +63,8 @@
                                 <td><%= empleado.id_empleado %></td>
                                 <td><%= empleado.nombre_empleado %></td>
                                 <td>
-                                    <form action="/deleteEmployee/<%= empleado.id_empleado %>" method="post" class="deleteForm">
+                                    <a href="/invesheet/<%= empleado.id_empleado %>/<%= empleado.nombre_empleado %>" class="btn btn-info btn-sm">Generar hoja del inventario</a>
+                                    <form action="/deleteEmployee/<%= empleado.id_empleado %>" method="post" class="deleteForm d-inline">
                                         <button class="btn btn-danger btn-sm" type="submit">Borrar</button>
                                     </form>
                                 </td>
@@ -94,3 +95,4 @@
     </script>
 </body>
 </html>
+

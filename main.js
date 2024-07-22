@@ -83,6 +83,25 @@ app.post("/createCombo",comboControl.createCombo)
 app.get("/editCombo/:idCombo", comboControl.getEditcomboView);
 app.post('/updateCombo/:idCombo', comboControl.updateCombo);
 
+//entpoint para hoja inventario 
+
+app.get("/invesheet/:idEmp/:nomEmp", async(req, res) => {
+    const idEmp = req.params.idEmp;
+    const nomEmp = req.params.nomEmp;
+    let invesheet  = await fileController.genInveSheet(idEmp,nomEmp); 
+    if (invesheet != null) {
+        res.sendFile(invesheet, (err) => {
+            if (err) {
+                console.error('Error al enviar el archivo PDF:', err);
+                res.status(err.status).end();
+            } else {
+                console.log('Archivo PDF enviado correctamente');
+            }
+        });
+    }
+ 
+    
+});
 // Iniciar el servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
