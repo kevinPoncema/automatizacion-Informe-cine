@@ -37,7 +37,7 @@ class Calcular {
                 }
 
                 resMat.push(obj);
-                console.log(resMat)
+                //console.log(resMat)
             }
             //hace el calculo de loa combos
             combos.forEach((combo) => {
@@ -61,10 +61,13 @@ class Calcular {
     }
     //separa los combos de los productos comunes
     async filtrarCombos(informeVentas, combos, informeSinCombos) {
+        console.log("informeVentas")
+        console.log(informeVentas,"\ngoku le gana\n")
         for (const item of informeVentas) {
-            const res = await ComboModel.esCombo([item.producto]);
+            const res = await ComboModel.esCombo([item.producto.toLowerCase()]);
             if (res.estatus) {
                 combos.push(item);
+                console.log(item)
             } else {
                 informeSinCombos.push(item);
             }
@@ -96,6 +99,7 @@ class Calcular {
         } else {
             obj.faltante = obj.balanceInventario;
         }
+
     }
 
     async calcularProductoSinVentas(obj, combos) {
